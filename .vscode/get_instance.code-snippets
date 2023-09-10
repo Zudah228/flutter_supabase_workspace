@@ -1,0 +1,22 @@
+{
+  "Snippets: get Theme instance": {
+    "prefix": ["theme", "final theme"],
+    "scope": "dart",
+    "body": "final theme = Theme.of(context);"
+  },
+  "Snippets: get ColorSchemeCustomized instance": {
+    "prefix": ["customcolors","colorScheme", "appcolorscheme", "final customColors"],
+    "scope": "dart",
+    "body": "final customColors = Theme.of(context).extension<CustomColors$0>()!;"
+  },
+  "Snippets: get MediaQuery instance": {
+    "prefix": ["mediaQuery", "final mediaQuery"],
+    "scope": "dart",
+    "body": "final $0 = MediaQuery.$1(context);"
+  },
+  "Snippets: get L10n instance": {
+    "prefix": ["l10n", "final l10n"],
+    "scope": "dart",
+    "body": "final l10n = context.l10n$0;"
+  }
+}

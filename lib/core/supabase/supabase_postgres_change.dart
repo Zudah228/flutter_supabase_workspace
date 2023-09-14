@@ -4,6 +4,7 @@ sealed class SupabasePostgresChange<T> {
   static SupabasePostgresChange<T> fromPayload<T>(
     dynamic payload, {
     required T Function(Map<String, dynamic> json) fromJson,
+    required String Function(Map<String, dynamic> json) getPrimaryKey,
   }) {
     final data = payload as Map<String, dynamic>;
 
@@ -11,7 +12,6 @@ sealed class SupabasePostgresChange<T> {
     final timestamp = DateTime.parse(data['commit_timestamp'] as String);
 
     T getNew() => fromJson(data['new'] as Map<String, dynamic>);
-    T getOld() => fromJson(data['old'] as Map<String, dynamic>);
 
     final result = switch (eventType) {
       'INSERT' => SupabasePostgresInsertChange(
@@ -21,11 +21,10 @@ sealed class SupabasePostgresChange<T> {
       'UPDATE' => SupabasePostgresUpdateChange(
           timestamp: timestamp,
           after: getNew(),
-          before: getOld(),
         ),
-      'DELETE' => SupabasePostgresDeleteChange(
+      'DELETE' => SupabasePostgresDeleteChange<T>(
           timestamp: timestamp,
-          before: getOld(),
+          primaryKey: getPrimaryKey(data['old'] as Map<String, dynamic>),
         ),
       _ => throw UnsupportedError('payload の eventType の取得に失敗しました')
     };
@@ -91,12 +90,10 @@ class SupabasePostgresInsertChange<T> implements SupabasePostgresChange<T> {
 
 class SupabasePostgresUpdateChange<T> implements SupabasePostgresChange<T> {
   SupabasePostgresUpdateChange({
-    required this.before,
     required this.after,
     required DateTime timestamp,
   }) : _timestamp = timestamp;
 
-  final T before;
   final T after;
   final DateTime _timestamp;
 
@@ -118,12 +115,13 @@ class SupabasePostgresUpdateChange<T> implements SupabasePostgresChange<T> {
 
 class SupabasePostgresDeleteChange<T> implements SupabasePostgresChange<T> {
   SupabasePostgresDeleteChange({
-    required this.before,
     required DateTime timestamp,
+    required this.primaryKey,
   }) : _timestamp = timestamp;
 
-  final T before;
   final DateTime _timestamp;
+
+  final String primaryKey;
 
   @override
   DateTime get timestamp => _timestamp;

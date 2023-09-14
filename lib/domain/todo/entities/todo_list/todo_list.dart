@@ -1,6 +1,6 @@
 import 'package:flutter_supabase_workspace/core/supabase/supabase_postgres_change.dart';
 
-import '../todo.dart';
+import '../todo/todo.dart';
 
 class TodoList {
   TodoList({required List<Todo> list})
@@ -26,10 +26,17 @@ class TodoList {
 
   TodoList added(SupabasePostgresChange<Todo> data) {
     return TodoList.withPostgresChanges(
-      listWithPostgresChanges: [
-        data,
-        ...listWithPostgresChanges,
-      ],
+      listWithPostgresChanges: switch (data) {
+        SupabasePostgresDeleteChange() => [
+            for (final e in listWithPostgresChanges)
+              if (e.data?.id == data.primaryKey) data else e,
+          ],
+        SupabasePostgresUpdateChange() => [
+            for (final e in listWithPostgresChanges)
+              if (e.data?.id == data.data.id) data else e,
+          ],
+        _ => [data, ...listWithPostgresChanges],
+      },
     );
   }
 }

@@ -14,6 +14,8 @@ class Todo {
   });
 
   factory Todo.fromJson(Map<String, Object?> json) => _$TodoFromJson(json);
+  static String getPrimaryKey(Map<String, Object?> json) =>
+      json['id']! as String;
 
   final String id;
 

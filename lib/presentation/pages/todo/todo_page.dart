@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_supabase_workspace/domain/todo/repositories/todo_repository.dart';
 import 'package:flutter_supabase_workspace/domain/todo/use_cases/todo_list.dart';
 import 'package:flutter_supabase_workspace/domain/todo/use_cases/todo_register.dart';
+import 'package:intl/intl.dart';
 
 class TodoPage extends ConsumerStatefulWidget {
   const TodoPage({super.key});
@@ -71,13 +72,14 @@ class _TodoPageState extends ConsumerState<TodoPage> {
             child: SizedBox(height: 16),
           ),
           SliverList.builder(
-            itemCount: todoListAsync.valueOrNull?.length ?? 0,
+            itemCount: todoListAsync.valueOrNull?.visibleList.length ?? 0,
             itemBuilder: (context, index) {
-              final todo = todoListAsync.value![index];
+              final todo = todoListAsync.value!.visibleList[index];
 
               return CheckboxListTile(
                 value: todo.isDone,
                 title: Text(todo.title),
+                subtitle: Text(DateFormat.yMEd().format(todo.createdAt)),
                 // TODO(tsuda): 完了済みにする処理
                 onChanged: (_) {},
               );

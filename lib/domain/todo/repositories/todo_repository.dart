@@ -38,7 +38,7 @@ class TodoRepository {
           .from(table)
           .select<PostgrestList>()
           .eq('is_done', false)
-          .order('created_at', ascending: true);
+          .order('created_at', ascending: false);
 
       final todoList = result.map(Todo.fromJson).toList();
 

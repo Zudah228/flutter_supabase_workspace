@@ -24,6 +24,7 @@ dependencies:
 
   # Extend Dart
   uuid: ^3.0.7
+  intl: ^0.18.1
 
 dev_dependencies:
   flutter_test:

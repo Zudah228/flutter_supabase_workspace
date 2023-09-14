@@ -12,5 +12,7 @@ void main() async {
     anonKey: supabaseSettings.apiKey,
   );
 
+  // Intl.defaultLocale = 'ja_JP';
+
   runApp(const ProviderScope(child: App()));
 }

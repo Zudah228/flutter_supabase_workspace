@@ -1,8 +1,7 @@
 class SupabaseSettings {
+  const SupabaseSettings({required this.url, required this.apiKey});
   final String url;
   final String apiKey;
-
-  const SupabaseSettings({required this.url, required this.apiKey});
 }
 
 const supabaseSettings = SupabaseSettings(

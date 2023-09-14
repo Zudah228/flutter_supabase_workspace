@@ -13,11 +13,17 @@ class Todo {
     required this.isDone,
   });
 
+  factory Todo.fromJson(Map<String, Object?> json) => _$TodoFromJson(json);
+
   final String id;
+
   final String title;
+
+  @JsonKey(name: 'created_at')
   final DateTime createdAt;
+
+  @JsonKey(name: 'is_done')
   final bool isDone;
 
-  factory Todo.fromJson(Map<String, Object?> json) => _$TodoFromJson(json);
   Map<String, Object?> toJson() => _$TodoToJson(this);
 }

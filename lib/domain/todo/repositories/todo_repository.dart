@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
+import 'package:flutter_supabase_workspace/domain/todo/entities/todo_list/todo_list.dart';
 import 'package:flutter_supabase_workspace/infrastructure/supabase/supabase_core.dart';
 import 'package:flutter_supabase_workspace/infrastructure/supabase/supabase_postgres_change.dart';
-import 'package:flutter_supabase_workspace/domain/todo/entities/todo_list/todo_list.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../entities/todo/todo.dart';

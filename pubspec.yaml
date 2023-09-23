@@ -19,6 +19,11 @@ dependencies:
   # UI
   cupertino_icons: ^1.0.2
 
+  # Local DB
+  isar: ^3.1.0+1
+  isar_flutter_libs: ^3.1.0+1
+  path_provider: ^2.1.1
+
   # SUpabase
   supabase_flutter: ^1.10.16
 
@@ -29,13 +34,18 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  
+  # lint
   flutter_lints: ^2.0.0
   pedantic_mono: 
   custom_lint: ^0.5.3
+  riverpod_lint: ^2.0.4
 
   json_serializable: ^6.7.1
+
+  # buildd_runner
   build_runner: ^2.4.6
-  riverpod_lint: ^2.0.4
+  isar_generator: ^3.1.0+1
 flutter:
 
   # The following line ensures that the Material Icons font is

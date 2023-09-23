@@ -1,12 +1,15 @@
 // ignore_for_file: invalid_annotation_target
 
+import 'package:isar/isar.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'todo.g.dart';
 
+@Collection()
 @JsonSerializable()
 class Todo {
-  const Todo({
+  const Todo( {
+    this.isarId = Isar.autoIncrement,
     required this.id,
     required this.title,
     required this.createdAt,
@@ -17,6 +20,7 @@ class Todo {
   static String getPrimaryKey(Map<String, Object?> json) =>
       json['id']! as String;
 
+  final Id isarId;
   final String id;
 
   final String title;

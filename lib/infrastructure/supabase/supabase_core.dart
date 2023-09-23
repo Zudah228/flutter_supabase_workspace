@@ -20,9 +20,19 @@ class SupabaseCore {
     );
   }
 
-  T run<T>(T Function(Supabase supabase) handler) {
+  T run<T>(T Function(SupabaseClient supabase) handler) {
     try {
-      return handler(_supabase);
+      return handler(_supabase.client);
+    } on Exception catch (e, s) {
+      debugPrintStack(label: e.toString(), stackTrace: s);
+
+      rethrow;
+    }
+  }
+
+  T runSync<T>(T Function(SupabaseClient supabase) handler) {
+    try {
+      return handler(_supabase.client);
     } on Exception catch (e, s) {
       debugPrintStack(label: e.toString(), stackTrace: s);
 

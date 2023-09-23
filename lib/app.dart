@@ -6,8 +6,14 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: TodoPage(),
+    return MaterialApp(
+      theme: ThemeData(
+        useMaterial3: true,
+      ),
+      darkTheme: ThemeData.dark(
+        useMaterial3: true,
+      ),
+      home: const TodoPage(),
     );
   }
 }

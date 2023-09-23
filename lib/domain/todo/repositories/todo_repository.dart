@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
-import 'package:flutter_supabase_workspace/core/supabase/supabase_core.dart';
-import 'package:flutter_supabase_workspace/core/supabase/supabase_postgres_change.dart';
+import 'package:flutter_supabase_workspace/infrastructure/supabase/supabase_core.dart';
+import 'package:flutter_supabase_workspace/infrastructure/supabase/supabase_postgres_change.dart';
 import 'package:flutter_supabase_workspace/domain/todo/entities/todo_list/todo_list.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -21,28 +21,25 @@ class TodoRepository {
 
   Future<void> add({required String title}) async {
     await _supabase.run(
-      (supabase) => supabase.client
-          .from(table)
-          .insert({'title': title, 'is_done': false}),
+      (client) => client.from(table).insert({'title': title, 'is_done': false}),
     );
   }
 
   Future<void> complete({required String id}) async {
     await _supabase.run(
-      (supabase) =>
-          supabase.client.from(table).update({'is_done': true}).eq('id', id),
+      (client) => client.from(table).update({'is_done': true}).eq('id', id),
     );
   }
 
   Future<void> delete({required String id}) async {
     await _supabase.run(
-      (supabase) => supabase.client.from(table).delete().eq('id', id),
+      (client) => client.from(table).delete().eq('id', id),
     );
   }
 
   Future<TodoList> list() async {
     final result = await _supabase.run(
-      (supabase) => supabase.client
+      (client) => client
           .from(table)
           .select<PostgrestList>()
           .eq('is_done', false)
@@ -58,9 +55,13 @@ class TodoRepository {
     void Function(SupabasePostgresChange<Todo> change)? onEvent,
   }) {
     return _supabase.run(
-      (supabase) => supabase.client.channel('todo-list-changes').on(
+      (client) => client.channel('todo-list-changes').on(
         RealtimeListenTypes.postgresChanges,
-        ChannelFilter(event: '*', table: 'todos', schema: 'public'),
+        ChannelFilter(
+          event: '*',
+          table: 'todos',
+          schema: 'public',
+        ),
         (payload, [ref]) {
           onEvent?.call(
             SupabasePostgresChange.fromPayload<Todo>(

@@ -1,4 +1,4 @@
-import 'package:flutter_supabase_workspace/core/supabase/supabase_postgres_change.dart';
+import 'package:flutter_supabase_workspace/infrastructure/supabase/supabase_postgres_change.dart';
 
 import '../todo/todo.dart';
 

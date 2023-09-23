@@ -43,7 +43,10 @@ class _TodoPageState extends ConsumerState<TodoPage> {
     final colorScheme = theme.colorScheme;
     final scaffoldBackgroundColor = theme.scaffoldBackgroundColor;
 
-    final todoListAsync = ref.watch(todoListProvider);
+    final todoListAsync = ref.watch(
+      todoListProvider
+          .select((value) => value.whenData((data) => data.visibleList)),
+    );
 
     return Scaffold(
       appBar: AppBar(title: const Text('Todo')),
@@ -62,7 +65,7 @@ class _TodoPageState extends ConsumerState<TodoPage> {
                     ),
                   ),
                   const SizedBox(width: 24),
-                  ElevatedButton(
+                  FilledButton(
                     onPressed: _textController.text.isEmpty
                         ? null
                         : () async {
@@ -82,33 +85,46 @@ class _TodoPageState extends ConsumerState<TodoPage> {
           ),
           todoListAsync.when(
             data: (todoList) {
-              return SliverList.builder(
-                itemCount: todoList.visibleList.length,
-                itemBuilder: (context, index) {
-                  final todo = todoList.visibleList[index];
-
-                  return Dismissible(
-                    key: ValueKey(todo.id),
-                    confirmDismiss: (_) async {
-                      try {
-                        await ref.read(todoDeleteProvider)(id: todo.id);
-                        return true;
-                      } on Exception catch (_) {
-                        return false;
-                      }
-                    },
-                    background: ColoredBox(color: colorScheme.error),
-                    child: CheckboxListTile(
-                      value: todo.isDone,
-                      title: Text(todo.title),
-                      subtitle: Text(DateFormat.yMEd().format(todo.createdAt)),
-                      onChanged: (_) {
-                        ref.read(todoCompleteProvider)(id: todo.id);
-                      },
+              if (todoList.isEmpty) {
+                return const SliverToBoxAdapter(
+                  child: Center(
+                    child: Text(
+                      '👆 追加しようぜ 👆',
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
                     ),
-                  );
-                },
-              );
+                  ),
+                );
+              } else {
+                return SliverList.builder(
+                  itemCount: todoList.length,
+                  itemBuilder: (context, index) {
+                    final todo = todoList[index];
+
+                    return Dismissible(
+                      key: ValueKey(todo.id),
+                      confirmDismiss: (_) async {
+                        try {
+                          await ref.read(todoDeleteProvider)(id: todo.id);
+                          return true;
+                        } on Exception catch (_) {
+                          return false;
+                        }
+                      },
+                      background: ColoredBox(color: colorScheme.error),
+                      child: CheckboxListTile(
+                        value: todo.isDone,
+                        title: Text(todo.title),
+                        subtitle:
+                            Text(DateFormat.yMEd().format(todo.createdAt)),
+                        onChanged: (_) {
+                          ref.read(todoCompleteProvider)(id: todo.id);
+                        },
+                      ),
+                    );
+                  },
+                );
+              }
             },
             error: (_, __) {
               return SliverFillRemaining(

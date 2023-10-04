@@ -1,3 +1,4 @@
+import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_supabase_workspace/domain/todo/repositories/todo_repository.dart';
@@ -26,6 +27,27 @@ class TodoPage extends ConsumerStatefulWidget {
 class _TodoPageState extends ConsumerState<TodoPage> {
   final _textController = TextEditingController();
 
+  final _cacheStrategy = AsyncCache<void>.ephemeral();
+
+  Future<void> _save() async {
+    try {
+      await _cacheStrategy.fetch(
+        () async {
+          await ref.read(todoRegisterProvider)(
+            title: _textController.text,
+          );
+
+          _textController.clear();
+        },
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(e.toString())));
+      }
+    }
+  }
+
   @override
   void initState() {
     _textController.addListener(() {
@@ -44,8 +66,7 @@ class _TodoPageState extends ConsumerState<TodoPage> {
     final scaffoldBackgroundColor = theme.scaffoldBackgroundColor;
 
     final todoListAsync = ref.watch(
-      todoListProvider
-          .select((value) => value.whenData((data) => data.visibleList)),
+      todoListProvider,
     );
 
     return Scaffold(
@@ -66,14 +87,7 @@ class _TodoPageState extends ConsumerState<TodoPage> {
                   ),
                   const SizedBox(width: 24),
                   FilledButton(
-                    onPressed: _textController.text.isEmpty
-                        ? null
-                        : () async {
-                            await ref.read(todoRegisterProvider)(
-                              title: _textController.text,
-                            );
-                            _textController.clear();
-                          },
+                    onPressed: _textController.text.isEmpty ? null : _save,
                     child: const Icon(Icons.add),
                   ),
                 ],
@@ -85,7 +99,7 @@ class _TodoPageState extends ConsumerState<TodoPage> {
           ),
           todoListAsync.when(
             data: (todoList) {
-              if (todoList.isEmpty) {
+              if (todoList.visibleList.isEmpty) {
                 return const SliverToBoxAdapter(
                   child: Center(
                     child: Text(
@@ -96,33 +110,40 @@ class _TodoPageState extends ConsumerState<TodoPage> {
                   ),
                 );
               } else {
-                return SliverList.builder(
-                  itemCount: todoList.length,
-                  itemBuilder: (context, index) {
-                    final todo = todoList[index];
+                return SliverMainAxisGroup(
+                  slivers: [
+                    SliverList.builder(
+                      itemCount: todoList.visibleList.length,
+                      itemBuilder: (context, index) {
+                        final todo = todoList.visibleList[index];
 
-                    return Dismissible(
-                      key: ValueKey(todo.id),
-                      confirmDismiss: (_) async {
-                        try {
-                          await ref.read(todoDeleteProvider)(id: todo.id);
-                          return true;
-                        } on Exception catch (_) {
-                          return false;
-                        }
+                        return Dismissible(
+                          key: ValueKey(todo.data!.id),
+                          confirmDismiss: (_) async {
+                            try {
+                              await ref.read(todoDeleteProvider)(
+                                id: todo.data!.id,
+                              );
+                              return true;
+                            } on Exception catch (_) {
+                              return false;
+                            }
+                          },
+                          background: ColoredBox(color: colorScheme.error),
+                          child: CheckboxListTile(
+                            value: todo.data!.isDone,
+                            title: Text(todo.data!.title),
+                            subtitle: Text(
+                              DateFormat.yMEd().format(todo.data!.createdAt),
+                            ),
+                            onChanged: (_) {
+                              ref.read(todoCompleteProvider)(id: todo.data!.id);
+                            },
+                          ),
+                        );
                       },
-                      background: ColoredBox(color: colorScheme.error),
-                      child: CheckboxListTile(
-                        value: todo.isDone,
-                        title: Text(todo.title),
-                        subtitle:
-                            Text(DateFormat.yMEd().format(todo.createdAt)),
-                        onChanged: (_) {
-                          ref.read(todoCompleteProvider)(id: todo.id);
-                        },
-                      ),
-                    );
-                  },
+                    ),
+                  ],
                 );
               }
             },

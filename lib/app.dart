@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_supabase_workspace/presentation/pages/todo/todo_page.dart';
+
+import 'presentation/pages/main/main_page.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -7,13 +8,56 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(
-        useMaterial3: true,
+      theme: AppTheme.build(
+        colorScheme: AppColorScheme.light,
       ),
-      darkTheme: ThemeData.dark(
-        useMaterial3: true,
+      darkTheme: AppTheme.build(
+        colorScheme: AppColorScheme.dark,
       ),
-      home: const TodoPage(),
+      home: const MainPage(),
+    );
+  }
+}
+
+class AppTheme {
+  const AppTheme._();
+
+  static ThemeData build({
+    required ColorScheme colorScheme,
+  }) =>
+      ThemeData(
+        colorScheme: colorScheme,
+        useMaterial3: true,
+        appBarTheme: const AppBarTheme(
+          toolbarHeight: kToolbarHeight + 16,
+        ),
+        listTileTheme: ListTileThemeData(
+          tileColor: colorScheme.primaryContainer,
+        ),
+      );
+}
+
+class AppColorScheme {
+  const AppColorScheme._();
+
+  static ColorScheme get light {
+    const baseColorScheme = ColorScheme.light();
+
+    return ColorScheme.fromSeed(
+      seedColor: baseColorScheme.primary,
+      secondary: baseColorScheme.secondary,
+      error: baseColorScheme.error,
+    );
+  }
+
+  static ColorScheme get dark {
+    const baseColorScheme = ColorScheme.dark();
+
+    return ColorScheme.fromSeed(
+      brightness: Brightness.dark,
+      seedColor: baseColorScheme.primary,
+      secondary: baseColorScheme.secondary,
+      error: baseColorScheme.error,
     );
   }
 }

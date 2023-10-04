@@ -7,7 +7,11 @@ class TodoDelete {
   const TodoDelete(this._ref);
   final Ref _ref;
 
-  Future<void> call({required String id}) async {
-    await _ref.read(todoRepositoryProvider).delete(id: id);
+  Future<void> call({
+    required String id,
+  }) async {
+    await _ref.read(todoRepositoryProvider).delete(
+          id: id,
+        );
   }
 }

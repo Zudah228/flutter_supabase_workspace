@@ -21,6 +21,7 @@ class Todo {
       json['id']! as String;
 
   final Id isarId;
+  @Index(unique: true)
   final String id;
 
   final String title;

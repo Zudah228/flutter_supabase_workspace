@@ -3,8 +3,10 @@ import 'package:flutter_supabase_workspace/infrastructure/supabase/supabase_post
 import '../todo/todo.dart';
 
 class TodoList {
-  TodoList({required List<Todo> list})
-      : listWithPostgresChanges = list
+  TodoList({
+    required List<Todo> list,
+    this.fromCache = false,
+  }) : listWithPostgresChanges = list
             .map(
               (e) => SupabasePostgresInitialChange<Todo>(
                 data: e,
@@ -13,16 +15,20 @@ class TodoList {
             )
             .toList();
 
-  TodoList.withPostgresChanges({required this.listWithPostgresChanges});
+  TodoList.withPostgresChanges({
+    required this.listWithPostgresChanges,
+    this.fromCache = false,
+  });
 
   factory TodoList.empty() => TodoList(list: []);
 
-  List<Todo> get visibleList => [
+  List<SupabasePostgresChange<Todo>> get visibleList => [
         for (final changes in listWithPostgresChanges)
-          if (changes.data != null) changes.data!,
+          if (changes.data != null) changes,
       ];
 
   final List<SupabasePostgresChange<Todo>> listWithPostgresChanges;
+  final bool fromCache;
 
   TodoList added(SupabasePostgresChange<Todo> data) {
     return TodoList.withPostgresChanges(

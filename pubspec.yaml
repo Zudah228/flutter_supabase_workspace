@@ -24,12 +24,13 @@ dependencies:
   isar_flutter_libs: ^3.1.0+1
   path_provider: ^2.1.1
 
-  # SUpabase
+  # Supabase
   supabase_flutter: ^1.10.16
 
   # Extend Dart
   uuid: ^3.0.7
   intl: ^0.18.1
+  async: ^2.11.0
 
 dev_dependencies:
   flutter_test:

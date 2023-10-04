@@ -17,7 +17,13 @@ class TodoListNotifier extends AutoDisposeAsyncNotifier<TodoList> {
 
     listenChange();
 
-    return ref.watch(todoRepositoryProvider).list();
+    return ref.watch(todoRepositoryProvider).list(
+      fromCache: (todoList) {
+        if (todoList.listWithPostgresChanges.isNotEmpty) {
+          state = AsyncData(todoList);
+        }
+      },
+    );
   }
 
   RealtimeChannel? _realtimeChannel;
